@@ -91,8 +91,9 @@ if [ ! -z "$(echo $MULTI_FILES | grep -i -E "(yes|true|1)")" ]; then
 else
   echo "Creating dump for ${MYSQLDUMP_DATABASE} from ${MYSQL_HOST}..."
 
-  DUMP_FILE="/tmp/dump.sql.gz"
-  mysqldump $MYSQL_HOST_OPTS $MYSQLDUMP_OPTIONS $MYSQLDUMP_DATABASE | gzip > $DUMP_FILE
+  DUMP_FILE="/tmp/dump.sql.gz.enc"
+  mysqldump $MYSQL_HOST_OPTS $MYSQLDUMP_OPTIONS $MYSQLDUMP_DATABASE | tar cz | openssl enc -aes-256-cbc -e > $DUMP_FILE
+  #decrypt: openssl aes-256-cbc -d -in $DUMP_FILE -out decrypted.tar.gz
 
   if [ $? == 0 ]; then
     if [ "${S3_FILENAME}" == "**None**" ]; then
